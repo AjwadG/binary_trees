@@ -57,16 +57,15 @@ bst_t *find_replace(const bst_t *tree, int value, int left)
  */
 void swap(bst_t *old, bst_t *new)
 {
-	if (new->left || new->right)
-	{
-		new->parent = NULL;
-		return;
-	}
 	if (new->parent && new->parent->right == new)
 		new->parent->right = NULL;
-	else if (new->parent && new->parent->left == new)
+	if (new->parent && new->parent->left == new)
 		new->parent->left = NULL;
-	new->parent = old->parent, new->left = old->left, new->right = old->right;
+	new->parent = old->parent;
+	if (new->n > old->n || new->left == NULL)
+		new->left = old->left;
+	if (new->n < old->n || new->right == NULL)
+		new->right = old->right;
 	if (new->right)
 		new->right->parent = new;
 	if (new->left)
