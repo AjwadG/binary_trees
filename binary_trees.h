@@ -70,6 +70,7 @@ bst_t *bst_remove(bst_t *root, int value);
 
 /* AVL */
 int binary_tree_is_avl(const binary_tree_t *tree);
+avl_t *avl_insert(avl_t **tree, int value);
 
 
 #endif
