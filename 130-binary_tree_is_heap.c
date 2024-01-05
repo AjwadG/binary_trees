@@ -1,54 +1,26 @@
 #include "binary_trees.h"
 
-
-
 /**
- * tree_height - measures the height of a binary tree
+ * calc_tree_size - measures the size of a binary tree
  *
  * @tree: pointer to the tree
  *
- * Return: the height of the node or -1 if tree is NULL
+ * Return: the size of the tree
  */
-int tree_height(const binary_tree_t *tree)
+size_t calc_tree_size(const binary_tree_t *tree)
 {
-	int left = 0, right = 0;
-
-	if (!tree)
-		return (-1);
-
-	if (tree->left)
-		left += 1 + tree_height(tree->left);
-
-	if (tree->right)
-		right += 1 + tree_height(tree->right);
-
-	return (left > right ? left : right);
-}
-
-
-/**
- * tree_balance - measures the balance fact of a binary tree
- *
- * @tree: pointer to the tree
- * @comp: is the tree left sided
- *
- * Return: the balance factor or 0 if tree is NULL
- */
-int tree_balance(const binary_tree_t *tree, int comp)
-{
-	int balance;
+	size_t left = 0, right = 0;
 
 	if (!tree)
 		return (0);
-	balance = tree_height(tree->left) - tree_height(tree->right);
-	if (balance < 0)
-		balance = -1;
-	else
-		balance = 1;
 
-	if (comp < 0)
-		return (comp);
-	return (comp * balance);
+	if (tree->left)
+		left += 1 + calc_tree_size(tree->left);
+
+	if (tree->right)
+		right += 1 + calc_tree_size(tree->right);
+
+	return (left + right);
 }
 
 
@@ -56,28 +28,28 @@ int tree_balance(const binary_tree_t *tree, int comp)
  * is_complete - checks if a binary tree is complete
  *
  * @tree: pointer to the tree
- * Return: 1, 2 if its complete or 0, > 2 if tree is NULL or not full
+ * @index: current node
+ * @size: size of the tree
+ *
+ * Return: 1 if complete 0 other wise
  */
-int is_complete(const binary_tree_t *tree)
+int is_complete(const binary_tree_t *tree, int index, int size)
 {
-	int complete = 1;
+	int left = 1, right = 1;
+
+	if (!tree)
+		return (0);
+
+	if (index >= size)
+		return (0);
 
 	if (tree->left)
-		complete *= is_complete(tree->left);
-
+		left = is_complete(tree->left, index * 2 + 1, size);
 	if (tree->right)
-		complete *= is_complete(tree->right);
+		right = is_complete(tree->right, index * 2 + 2, size);
 
-	complete = tree_balance(tree, complete);
-
-	if ((tree->right && tree->left) || (!tree->right && !tree->left))
-		return (complete);
-	else if (tree->left && !tree->left->left && !tree->left->right)
-		return (2 * complete);
-	else
-		return (0);
+	return (left * right);
 }
-
 
 
 /**
@@ -116,17 +88,15 @@ int is_heap(const binary_tree_t *tree)
  */
 int binary_tree_is_heap(const binary_tree_t *tree)
 {
-	int comp;
-	int heap;
+	int size;
 
 	if (!tree)
 		return (0);
 
-	comp = is_complete(tree);
-	if (comp != 1 && comp != 2)
+	size = calc_tree_size(tree) + 1;
+
+	if (!is_complete(tree, 0, size))
 		return (0);
 
-	heap = is_heap(tree);
-	return (heap);
-
+	return (is_heap(tree));
 }
